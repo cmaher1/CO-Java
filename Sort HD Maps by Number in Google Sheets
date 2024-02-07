@@ -1,0 +1,36 @@
+function insertImagesSortedByDistrict() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var folderId = '1XP1cLmeo-o5PYScV77yQGeot8rsToBeP'; // Replace with your actual folder ID
+  var folder = DriveApp.getFolderById(folderId);
+  var images = folder.getFiles();
+  var imageDetails = [];
+
+  // Collect details of each image, including the district number extracted from its name
+  while (images.hasNext()) {
+    var image = images.next();
+    var imageName = image.getName();
+    // Adjusted to match the updated file naming convention
+    var match = imageName.match(/2021_House_District_(\d+)-1\.png/);
+    if (match && match[1]) {
+      var districtNumber = parseInt(match[1], 10); // Parse the district number as an integer
+      imageDetails.push({
+        name: imageName,
+        id: image.getId(),
+        districtNumber: districtNumber // Store the extracted district number
+      });
+    }
+  }
+
+  // Sort the imageDetails array by district numbers
+  imageDetails.sort(function(a, b) {
+    return a.districtNumber - b.districtNumber;
+  });
+
+  // Insert the sorted images into the Google Sheet
+  var row = 1; // Start inserting from the first row
+  imageDetails.forEach(function(detail) {
+    var imageUrl = "https://drive.google.com/uc?export=view&id=" + detail.id;
+    // Use the IMAGE function of Google Sheets to insert each image
+    sheet.getRange(row++, 1).setFormula('=IMAGE("' + imageUrl + '")');
+  });
+}
