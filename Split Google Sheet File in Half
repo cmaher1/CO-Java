@@ -1,0 +1,24 @@
+function splitSheetHorizontally() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getActiveSheet();
+  var range = sheet.getDataRange();
+  var numColumns = range.getNumColumns();
+  var numRows = range.getNumRows();
+  
+  // Define the split point (row index to split at)
+  var splitRowIndex = Math.ceil(numRows / 2);
+  
+  // Get data from the first half
+  var firstHalfData = sheet.getRange(1, 1, splitRowIndex, numColumns).getValues();
+  
+  // Create new sheet and set first half data
+  var newSheet1 = ss.insertSheet('First Half Rows');
+  newSheet1.getRange(1, 1, splitRowIndex, numColumns).setValues(firstHalfData);
+  
+  // Get data from the second half
+  var secondHalfData = sheet.getRange(splitRowIndex + 1, 1, numRows - splitRowIndex, numColumns).getValues();
+  
+  // Create another new sheet and set second half data
+  var newSheet2 = ss.insertSheet('Second Half Rows');
+  newSheet2.getRange(1, 1, numRows - splitRowIndex, numColumns).setValues(secondHalfData);
+}
